@@ -12,7 +12,7 @@ Vous êtes en poste dans une agence de développement web depuis quelques semain
 
 Votre client est Kanap, une marque de canapés qui vend ses produits depuis sa boutique exclusivement. Aujourd’hui, celle-ci souhaiterait avoir une plateforme de e-commerce en plus de sa boutique physique pour vendre ses produits sur Internet.
 
-![image](https://github.com/jackywongdev/JackyWong_5_27092021/kanap.png)
+![image](https://github.com/jackywongdev/JackyWong_5_27092021/P5-Dev-Web-Kanap/kanap.png)
 
 ## Logiciels, extentions et langages
 - Visual Studio Code
