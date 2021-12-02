@@ -51,7 +51,7 @@ async function fetchAndDrawProduct() {
     addToCartButton.addEventListener('click', () => {
 
       var productInLocalStorage = JSON.parse(localStorage.getItem('cartItems'));
-      console.log(productInLocalStorage);
+
 
       localStorage = window.localStorage;
 

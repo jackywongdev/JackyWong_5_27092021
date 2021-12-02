@@ -12,6 +12,7 @@ function drawDataFromLocalStorage() {
   // si le local storage est vide alors nous affichons un message  
   if (currentItemsInCart === null || currentItemsInCart == 0) {
     productsInCart.innerHTML = `<p>Votre panier ne contiens pas d'article</p>`
+
   }
   // si non on affiche les produits du local storage avec la méthode map
   else {
@@ -52,8 +53,8 @@ function deleteProductFromCart() {
   let deleteButton = document.querySelectorAll('.deleteItem')
 
   for (let i = 0; i < deleteButton.length; ++i) {
-    deleteButton[i].addEventListener('click', (event) => {
-      event.preventDefault();
+    deleteButton[i].addEventListener('click', (e) => {
+      e.preventDefault();
 
       let productId = currentItemsInCart[i].id;
       let productColor = currentItemsInCart[i].color;
@@ -94,8 +95,8 @@ function productTotalPriceAndCount() {
   productSum = 0;
 
 
-  for (var j = 0; j < ItemTotal; ++j) {
-    productSum += (itemQuantity[j].valueAsNumber * currentItemsInCart[j].price)
+  for (var k = 0; k < ItemTotal; ++k) {
+    productSum += (itemQuantity[k].valueAsNumber * currentItemsInCart[k].price)
   };
 
   let totalSum = document.getElementById('totalPrice');
@@ -130,7 +131,7 @@ function modifyQuantityWitchSelector() {
 modifyQuantityWitchSelector()
 
 
-function cartFormValidator() {
+function verifyAndPost() {
 
   //on définit dans un premier les RegExp afin que l'utilisateur remplisse les champs de manière valide 
 
@@ -154,10 +155,10 @@ function cartFormValidator() {
 
     if (nameRegExp.test(inputFirstName.value)) {
       firstNameErrorMsg.innerHTML = 'champ validé';
-
+      return true;
     } else {
       firstNameErrorMsg.innerHTML = 'Veuillez renseigner votre prénom!';
-
+      return false;
     }
   };
 
@@ -166,27 +167,31 @@ function cartFormValidator() {
   });
 
   const checkLastName = function (inputLastName) {
-    let firstNameErrorMsg = inputLastName.nextElementSibling;
+    let lastNameErrorMsg = inputLastName.nextElementSibling;
 
     if (nameRegExp.test(inputLastName.value)) {
       lastNameErrorMsg.innerHTML = 'champ validé';
+      return true
     } else {
-      firstNameErrorMsg.innerHTML = 'Veuillez renseigner votre nom de famille!';
+      lastNameErrorMsg.innerHTML = 'Veuillez renseigner votre nom de famille!';
+      return false
     }
 
   };
 
   form.address.addEventListener('change', function () {
-    checkaddress(this);
+    checkAddress(this);
   });
 
-  const checkaddress = function (inputAddress) {
+  const checkAddress = function (inputAddress) {
     let addressErrorMsg = inputAddress.nextElementSibling;
 
     if (addressRegExp.test(inputAddress.value)) {
       addressErrorMsg.innerHTML = 'champ validé';
+      return true
     } else {
-      addressErrorMsg.innerHTML = 'Veuillez renseigner votre addresse!';
+      addressErrorMsg.innerHTML = 'Veuillez renseigner votre adresse!';
+      return false
     }
   };
 
@@ -199,8 +204,10 @@ function cartFormValidator() {
 
     if (nameRegExp.test(inputCity.value)) {
       cityErrorMsg.innerHTML = 'champ validé';
+      return true
     } else {
       cityErrorMsg.innerHTML = 'Veuillez renseigner votre ville!';
+      return false
     }
   };
 
@@ -213,60 +220,64 @@ function cartFormValidator() {
 
     if (emailRegExp.test(inputEmail.value)) {
       emailErrorMsg.innerHTML = 'champ validé';
+      return true
     } else {
       emailErrorMsg.innerHTML = 'Veuillez renseigner votre e-mail!';
+      return false
     }
   };
-}
-cartFormValidator();
 
-// récupération des données du formulaire dans le local storage
+  // récupération des données du formulaire dans le local storage
 
-function saveForm() {
 
-  const orderButton = document.getElementById('order');
+  document.getElementById("order").addEventListener('click', (e) => {
+    e.preventDefault
 
-  orderButton.addEventListener('click', (event) => {
-    let clientFirstName = document.getElementById('firstName')
-    let clientLastName = document.getElementById('lastName')
-    let clientAddress = document.getElementById('address')
-    let clientCity = document.getElementById('city')
-    let clientEmail = document.getElementById('email')
+    if (checkFirstName(form.firstName) && checkLastName(form.lastName) && checkAddress(form.address) && checkCity(form.city) && checkEmail(form.email)) {
 
-    const orderClientInfo = {
-      firstName: clientFirstName.value,
-      lastName: clientLastName.value,
-      address: clientAddress.value,
-      city: clientCity.value,
-      email: clientEmail.value,
-    };
+      let clientFirstName = document.getElementById('firstName')
+      let clientLastName = document.getElementById('lastName')
+      let clientAddress = document.getElementById('address')
+      let clientCity = document.getElementById('city')
+      let clientEmail = document.getElementById('email')
 
-    const order = {
-      contact: orderClientInfo,
-      products: currentItemsInCart.map(product => product.id)
+      const orderClientInfo = {
+        firstName: clientFirstName.value,
+        lastName: clientLastName.value,
+        address: clientAddress.value,
+        city: clientCity.value,
+        email: clientEmail.value,
+      };
+
+      const order = {
+        contact: orderClientInfo,
+        products: currentItemsInCart.map(product => product.id)
+      }
+
+      // on utilise la méthode post pour envoyé les informations du client et sont panier
+      fetch("http://localhost:3000/api/products/order",
+        {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          method: "POST",
+          body: JSON.stringify(order)
+        })
+        .then(res => res.json())
+        .then(data => {
+          // on redirige l'utilisateur vers la page confirmation
+          document.location.href = `./confirmation.html?orderId=${data.orderId}`
+
+        })
+        .catch((error) => {
+          console.log('Erreur de la requête API')
+          return error('Erreur de la requête API')
+        });
+    } else {
+      alert("Le formulaire n'est pas valide")
     }
 
-    // on utilise la méthode post pour envoyé les informations du client et sont panier
-    fetch("http://localhost:3000/api/products/order",
-      {
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        method: "POST",
-        body: JSON.stringify(order)
-      })
-      .then(res => res.json())
-      .then(data => {
-        // on redirige l'utilisateur vers la page confirmation
-        document.location.href = `./confirmation.html?orderId=${data.orderId}`
-
-      })
-      .catch((error) => {
-        console.log('Erreur de la requête API')
-        return error('Erreur de la requête API')
-      });
   });
-};
-saveForm()
-
+}
+verifyAndPost()
