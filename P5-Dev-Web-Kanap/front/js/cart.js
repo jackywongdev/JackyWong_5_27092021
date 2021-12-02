@@ -2,7 +2,7 @@
 // récupération des donées du local storage
 
 let currentItemsInCart = JSON.parse(localStorage.getItem('cartItems'))
-console.table(currentItemsInCart)
+
 
 const productsInCart = document.getElementById('cart__items')
 
@@ -114,17 +114,25 @@ function modifyQuantityWitchSelector() {
     modifyedQuantity[k].addEventListener('change', (event) => {
       event.preventDefault();
 
+
+      console.log(currentItemsInCart);
+
       let localStorageQuantity = currentItemsInCart[k].quantity;
+
       let quantityModifyed = modifyedQuantity[k].valueAsNumber
 
-      const sumQuantity = currentItemsInCart.find((element) => element.quantityModifyed !== localStorageQuantity);
+      var existantProduct = currentItemsInCart.find((element) => element.id === currentItemsInCart[k].id && element.color === currentItemsInCart[k].color);
+      console.log(existantProduct);
+      if (existantProduct) {
+        const sumQuantity = currentItemsInCart.filter((element) => element.quantityModifyed !== localStorageQuantity);
 
-      sumQuantity.quantity = quantityModifyed;
-      currentItemsInCart[k].quantity = sumQuantity.quantity;
+        sumQuantity.quantity = quantityModifyed;
+        currentItemsInCart[k].quantity = sumQuantity.quantity;
 
-      localStorage.setItem('cartItems', JSON.stringify(currentItemsInCart));
-      // une actualisation de la page permet la modification visuel de la quantité indiqué sur le produit et le total d'article, ainsi que le réajustement du prix
-      location.reload();
+        localStorage.setItem('cartItems', JSON.stringify(currentItemsInCart));
+        // une actualisation de la page permet la modification visuel de la quantité indiqué sur le produit et le total d'article, ainsi que le réajustement du prix
+        location.reload();
+      }
     });
   };
 };
