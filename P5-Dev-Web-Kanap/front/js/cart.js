@@ -239,7 +239,7 @@ function verifyAndPost() {
 
 
   document.getElementById("order").addEventListener('click', (e) => {
-    e.preventDefault
+    e.preventDefault()
 
     if (checkFirstName(form.firstName) && checkLastName(form.lastName) && checkAddress(form.address) && checkCity(form.city) && checkEmail(form.email)) {
 
@@ -275,17 +275,16 @@ function verifyAndPost() {
         .then(res => res.json())
         .then(data => {
           // on redirige l'utilisateur vers la page confirmation
-          document.location.href = `./confirmation.html?orderId=${data.orderId}`
-
+          document.location.href = `./confirmation.html?orderId=${data.orderId}`;
+          e.preventDefault()
         })
         .catch((error) => {
-          console.log('Erreur de la requête API')
-          return error('Erreur de la requête API')
+          console.log('Erreur de la requête API');
+          return error('Erreur de la requête API');
         });
     } else {
-      alert("Le formulaire n'est pas valide")
-    }
-
+      alert("Le formulaire n'est pas valide");
+    };
   });
 }
-verifyAndPost()
+verifyAndPost();
